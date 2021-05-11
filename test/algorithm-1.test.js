@@ -5,7 +5,7 @@ chai.should();
 
 describe('Algorithm 1',async()=>{
 
-  describe('Estratégia 1 -> Caso a remoção de um nó produza uma nova folha/terminal em um galho mais à direita (ainda não visitado), o mesmo se torna uma folha e será retornado na mesma recursão',async ()=>{
+  describe('Estratégia 1 -> Caso a remoção de um nó produza uma nova folha/terminal em um galho mais à direita (ainda não visitado), o mesmo se torna uma folha e será retornado na mesma iteração',async ()=>{
     it('Deve retornar a ordem correta - caso 1 / Estrategia 1',async function(){
       const modules = [
         {name:'7',dependencies:['5','6']},
@@ -59,7 +59,7 @@ describe('Algorithm 1',async()=>{
   })
 
 
-  describe('Estratégia 2 -> Retornar apenas as folhas que já existiam em cada "galho" da ´arvore, para cada recursão',async ()=>{
+  describe('Estratégia 2 -> Retornar apenas as folhas que já existiam em cada "galho" da ´arvore, para cada iteração',async ()=>{
     it('Deve retornar a ordem correta - caso 1 / Estrategia 2',async function(){
       const modules = [
         {name:'7',dependencies:['5','6']},
