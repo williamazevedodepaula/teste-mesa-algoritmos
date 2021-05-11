@@ -1,5 +1,6 @@
 var chai = require('chai'); 
-var dependencySearch = require('../src/algorithm-1');
+var dependencySearch = require('../src/algorithm-1').dependencySearch;
+var DependencyTree = require('../src/algorithm-1').DependencyTree;
 chai.should();
 
 describe('Algorithm 1',async()=>{
@@ -18,7 +19,7 @@ describe('Algorithm 1',async()=>{
 
     const expected_output = ['0','1','4','3','2','6','5','7'];
 
-    dependencySearch(modules,rootNodes).should.deep.equal(expected_output)
+    dependencySearch(DependencyTree.SEARCH_STRATEGY_2,modules,rootNodes).should.deep.equal(expected_output)
   })
 
 
@@ -52,6 +53,6 @@ describe('Algorithm 1',async()=>{
       'pacote 1'
     ];
 
-    dependencySearch(modules,rootNodes).should.deep.equal(expected_output)
+    dependencySearch(DependencyTree.SEARCH_STRATEGY_2,modules,rootNodes).should.deep.equal(expected_output)
   })
 })

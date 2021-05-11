@@ -1,6 +1,6 @@
 
-function dependencySearch(modules,rootNodeNames){
-  const dependencyTree = new DependencyTree(modules,rootNodeNames);
+function dependencySearch(searchStrategy,modules,rootNodeNames){
+  const dependencyTree = new DependencyTree(searchStrategy,modules,rootNodeNames);
   const result = dependencyTree.listDependencies();
   return result;
 }
@@ -11,21 +11,28 @@ function dependencySearch(modules,rootNodeNames){
  */
 class DependencyTree{
 
+  static get SEARCH_STRATEGY_1(){ return 1 }
+  static get SEARCH_STRATEGY_2(){ return 2 }
+
   /**
    * Constroi a arvore de dependencias a partir de  uma entrada em forma de array.
    * Um Nó Raiz "abstrato" é criado, tendo como filhos todos os nós raiz da árvore de dependência
+   * @param {number} searchStrategy estratégia de busca a ser utilizada
    * @param {Array<Object>} modules array de modules, no formato {name:string, dependencies:Array<string>}
    * @param {Array<string>} rootNodeNames array contendo o nome dos nós raiz (dependencias de nível 1)
    */
-  constructor(modules,rootNodeNames){
+  constructor(searchStrategy,modules,rootNodeNames){
     const nodes = {};
     modules.forEach(module=>{
-      nodes['name-'+module.name]=new Node(module.name)
+      nodes['name-'+module.name]=new Node(searchStrategy,module.name)
     });
 
     modules.forEach(module=>{
       nodes['name-'+module.name].dependencies = module.dependencies.map(dependencyName => nodes['name-'+dependencyName]);
     })
+
+    /** Indica a estrategia a ser usada na busca */
+    this.searchStrategy = searchStrategy;
 
     /** Quantidade de nós da árvore */
     this.length = Object.keys(nodes).length;
@@ -35,7 +42,7 @@ class DependencyTree{
      * com o objetivo de facilitar o algoritmo, garantindo que, mesmo que hajam N pacotes de nível 1,
      * a árvore tenha sempre uma única raiz
      **/
-    this.root = new Node('root',rootNodeNames.map(name=>nodes['name-'+name]));
+    this.root = new Node(searchStrategy,'root',rootNodeNames.map(name=>nodes['name-'+name]));
   }
 
   /**
@@ -63,13 +70,15 @@ class Node{
 
   /**
    * Constrói um nó
+   * @param {number} searchStrategy estratégia de busca a ser utilizada
    * @param {string} name nome do Nó (embora os pacotes do exemplo tenham nomes numéricos, achei mais coerente utilizar strings para os nomes) 
    * @param {Array<Node>} dependencies lista de dependências
    */
-  constructor(name,dependencies){
+  constructor(searchStrategy,name,dependencies){
     this.name = name;
-    this.dependencies = dependencies||[];
     this.deleted = false;
+    this.searchStrategy = searchStrategy;
+    this.dependencies = dependencies||[];    
   }
 
 
@@ -81,13 +90,15 @@ class Node{
   listDependencies(visited){
     visited = visited||[];
     
-    const dependencies = this.dependencies.filter(dependency=>!dependency.deleted && !visited['name-'+dependency.name]);
-    const visitedDependencies = this.dependencies.filter(dependency=>visited['name-'+dependency.name]);
+    const dependencies = this.dependencies.filter(dependency=>!dependency.deleted);
+    //Se utilizar a estratégia de busca 2, Indica que, embora o nó tenha se tornado uma folha, o filho acabou de ser removido (nesta interação), e portanto este não deve ser contabilizado
+    //este controle é util quando há muita dependencia entre os nós, de forma que um mesmo nó pode virar folha
+    const hasVisitedDependencies = (this.searchStrategy == DependencyTree.SEARCH_STRATEGY_1) ? [] :  this.dependencies.filter(dependency=>visited['name-'+dependency.name]);
 
     visited['name-'+this.name] = true;
     if(dependencies && (dependencies.length > 0)){      
       return dependencies.reduce((result,dependency)=> !visited['name-'+dependency.name] ? result.concat(dependency.listDependencies(visited)) : result,[]);
-    }else if(!this.deleted &&  (visitedDependencies.length == 0)){
+    }else if(hasVisitedDependencies.length == 0){
       this.deleted = true;
       return this.name;      
     }else{
@@ -97,4 +108,4 @@ class Node{
 }
 
 
-module.exports = dependencySearch;
+module.exports = {dependencySearch,DependencyTree,Node};
