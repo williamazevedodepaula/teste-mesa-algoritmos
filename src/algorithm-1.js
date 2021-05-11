@@ -49,7 +49,7 @@ class DependencyTree{
   listDependencies(){
     let result = [];
     while (result.length < this.length){
-      result = result.concat(this.root.listDependencies());
+      result = result.concat(this.root.listDependencies([]));
     }
     return result;
   }
@@ -82,11 +82,12 @@ class Node{
     visited = visited||[];
     
     const dependencies = this.dependencies.filter(dependency=>!dependency.deleted && !visited['name-'+dependency.name]);
+    const visitedDependencies = this.dependencies.filter(dependency=>visited['name-'+dependency.name]);
 
-    if(dependencies && dependencies.length > 0){
-      visited['name-'+this.name] = true;
-      return dependencies.reduce((result,dependency)=>result.concat(dependency.listDependencies(visited)),[]);
-    }else if(!this.deleted && !visited['name-'+this.name]){
+    visited['name-'+this.name] = true;
+    if(dependencies && (dependencies.length > 0)){      
+      return dependencies.reduce((result,dependency)=> !visited['name-'+dependency.name] ? result.concat(dependency.listDependencies(visited)) : result,[]);
+    }else if(!this.deleted &&  (visitedDependencies.length == 0)){
       this.deleted = true;
       return this.name;      
     }else{
