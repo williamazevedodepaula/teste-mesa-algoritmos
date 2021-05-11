@@ -1,0 +1,15 @@
+{
+  "name": "algorithms",
+  "version": "1.0.0",
+  "description": "Implementacao dos algoritmos 1 e 2 do teste de dev da Mesa",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^8.4.0"
+  }
+}
