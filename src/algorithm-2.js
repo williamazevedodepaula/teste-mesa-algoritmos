@@ -46,50 +46,58 @@ const dijkstra = (matrix,startNodeIndex)=>{
     
     return lowest.vertex;
   }
-}
-
-
-function initializeDijkstra(matrix,startNodeIndex){
-  const remainingVertex = [];
-  const minNodes = [];
-  const distances = [];
-  matrix.forEach((col,index) => {
-    remainingVertex.push(index);    
-    distances.push(INFINITY);
-    minNodes.push(null);
-  });
-  distances[startNodeIndex] = 0;
-  return [remainingVertex,minNodes,distances]
-}
-
-function formatResults(matrix,distances,minNodes){
-  const results = [];
-
-  return distances.map((distance,index)=>({vertex:index,distance,path:getPath(index)}));
-
-  function getPath(index){
-    if(index == 0) return '0';
-
-    let i = index;
-    let path = index.toString();
-
-    do{
-      i = minNodes[i];     
-      path = `${i}-${path}`
-    }while(i);
-    return path;
+  function initializeDijkstra(matrix,startNodeIndex){
+    const remainingVertex = [];
+    const minNodes = [];
+    const distances = [];
+    matrix.forEach((col,index) => {
+      remainingVertex.push(index);    
+      distances.push(INFINITY);
+      minNodes.push(null);
+    });
+    distances[startNodeIndex] = 0;
+    return [remainingVertex,minNodes,distances]
   }
-}
+  
+  function formatResults(matrix,distances,minNodes){
+    const results = [];
+  
+    return distances.map((distance,index)=>({vertex:index,distance,path:getPath(index)}));
+  
+    function getPath(index){
+      if(index == startNodeIndex) return startNodeIndex.toString();
+  
+      let i = index;
+      let path = index.toString();
+  
+      do{
+        i = minNodes[i];     
+        path = `${i}-${path}`
+      }while(i != startNodeIndex);
 
-function printResult(result){
-  console.log('-----------------------------------------------------');
-  console.log('                 Result')
-  console.log('-----------------------------------------------------');
-  result.forEach((item,index)=>{
-    if(index == 0) return;
-    console.log(`${item.vertex},${item.distance},${item.path}`);
-  })
-  console.log('-----------------------------------------------------');
+      return path;
+    }
+  }
+  
+  function printResult(result){
+    const color_red = '\x1b[31m';
+    const color_green = '\x1b[32m';
+    const color_blue = '\x1b[34m';
+    const color_yellow = '\x1b[33m';
+    const color_reset = '\x1b[0m';
+  
+    console.log(color_green);
+    console.log('-----------------------------------------------------');
+    console.log('                 Result')
+    console.log('-----------------------------------------------------');
+    result.forEach((item,index)=>{
+      if(index == startNodeIndex) return;
+      console.log(`${color_red}${item.vertex}, ${color_blue}${item.distance}, ${color_yellow}${item.path}`);
+    })
+    console.log(color_green,'-----------------------------------------------------',color_reset);
+    console.log(`Legenda: ${color_red}Vértice, ${color_blue}Distância, ${color_yellow}Caminho`)
+    console.log(color_green,'-----------------------------------------------------',color_reset);
+  }
 }
 
 
